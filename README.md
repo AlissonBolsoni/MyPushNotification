@@ -5,7 +5,7 @@ Projeto para utilização do FireBase como servidor de envio de Push Notificatio
 ## Tecnologias Utilizadas
 
 1: Kotlin
-2: SQLite
+2: Realm (NoSql para Android)
 3: FireBase
 
 ## Repositório
