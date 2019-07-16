@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "361571296609",
+    "firebase_url": "https://my-push-notification-be866.firebaseio.com",
+    "project_id": "my-push-notification-be866",
+    "storage_bucket": "my-push-notification-be866.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:361571296609:android:be2fe140859dd010",
+        "android_client_info": {
+          "package_name": "br.com.alissontfb.mypushnotification"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "361571296609-q5s8ubtn311j5lu47dlng99kd8bupoip.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDrZ6yG3pzAZMqRO4EtDFq0-ABSABlUuHo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "361571296609-q5s8ubtn311j5lu47dlng99kd8bupoip.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
