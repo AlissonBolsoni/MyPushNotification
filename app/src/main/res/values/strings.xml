@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">My Push Notification</string>
+    <string name="create_task_message">Qual é a tarefa que você quer criar</string>
 </resources>
