@@ -39,10 +39,20 @@
                     android:ellipsize="end"/>
 
             <ImageView
-                    android:id="@+id/item_task_new"
+                    android:id="@+id/item_task_read"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:src="@drawable/ic_new"
+                    app:layout_constraintTop_toBottomOf="@+id/item_task_description"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toStartOf="@+id/item_task_description"
+                    android:layout_marginTop="16dp"/>
+
+            <ImageView
+                    android:id="@+id/item_task_done"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/ic_done"
                     app:layout_constraintTop_toBottomOf="@+id/item_task_description"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintStart_toStartOf="@+id/item_task_description"

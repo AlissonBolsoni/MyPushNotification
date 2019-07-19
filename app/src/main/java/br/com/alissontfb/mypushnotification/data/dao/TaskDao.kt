@@ -8,46 +8,60 @@ open class TaskDao {
     private val _class = Task::class.java
     private val realm: Realm = Realm.getDefaultInstance()
 
-    fun getAll(callback: (List<Task>) -> Unit) {
+    fun getAll(): List<Task> {
         try {
-            val result = realm.where(_class).and().equalTo(Task.EXCLUDED, false).findAllAsync()
-            result.addChangeListener { r: RealmResults<Task> ->
-                callback(r.toList())
-            }
-        }catch (e: Exception){
-            e.printStackTrace()
+            return realm.where(_class).and().equalTo(Task.EXCLUDED, false).findAll().toList()
+        } catch (e: Exception) {
+            throw Exception(e)
         }
     }
 
-    fun createTask(taskName: String) {
+    fun createTask(taskName: String):Task {
         val task = Task()
         task.taskDescription = taskName
-        realm.executeTransactionAsync {
+        realm.executeTransaction {
             it.insertOrUpdate(task)
         }
+        return task
     }
 
-    fun editTaskName(id: String, taskName: String, callback: () -> Unit) {
-        realm.executeTransactionAsync {
-            val task = it.where(_class).equalTo("id", id).findFirst()
-            task!!.taskDescription = taskName
-            callback()
-        }
-    }
+//    fun editTaskName(id: String, taskName: String, callback: () -> Unit) {
+//        realm.executeTransactionAsync {
+//            val task = it.where(_class).equalTo(Task.ID, id).findFirst()
+//            task!!.taskDescription = taskName
+//            task!!.read = false
+//            it.insertOrUpdate(task)
+//            callback()
+//        }
+//    }
 
-    fun updateTask(id: String, action: TaskUpdateTypes, callback: () -> Unit) {
-        realm.executeTransactionAsync {
-            val task = it.where(_class).equalTo("id", id).findFirst()
-            when(action){
-                TaskUpdateTypes.READ ->
-                    task!!.new = false
-                TaskUpdateTypes.FINISH ->
-                    task!!.done = true
-                else ->
-                    task!!.excluded = true
+    fun updateTask(id: String, action: TaskUpdateTypes, callback: () -> Unit, description: String = "") {
+        realm.executeTransaction { realm ->
+            val task = realm.where(Task::class.java).equalTo(Task.ID, id).findFirst()
+            if (task != null) {
+                when (action) {
+                    TaskUpdateTypes.READ -> {
+                        if (!task.read) {
+                            task.read = !task.read
+                        }
+                    }
+                    TaskUpdateTypes.FINISH -> {
+                        if (!task.done)
+                            task.done = !task.done
+                    }
+                    TaskUpdateTypes.DESCRIPTION -> {
+                        task.taskDescription = description
+                        if (!task.read)
+                            task.read = !task.read
+                    }
+                    else -> {
+                        if (!task.excluded)
+                            task.excluded = !task.excluded
+                    }
+                }
             }
-
             callback()
         }
+
     }
 }

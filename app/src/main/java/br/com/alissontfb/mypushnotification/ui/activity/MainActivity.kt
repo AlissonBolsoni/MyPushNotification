@@ -1,21 +1,24 @@
 package br.com.alissontfb.mypushnotification.ui.activity
 
 import android.os.Bundle
-import android.util.Log
 import android.widget.EditText
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.recyclerview.widget.ItemTouchHelper
 import br.com.alissontfb.mypushnotification.R
 import br.com.alissontfb.mypushnotification.data.dao.TaskDao
 import br.com.alissontfb.mypushnotification.data.dao.TaskUpdateTypes
+import br.com.alissontfb.mypushnotification.data.entity.Task
 import br.com.alissontfb.mypushnotification.ui.adapter.TaskAdapter
+import br.com.alissontfb.mypushnotification.ui.callback.TaskItemCallback
 import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : AppCompatActivity() {
 
     private val dao = TaskDao()
     private var dialog: AlertDialog? = null
+    private lateinit var adapter: TaskAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -37,8 +40,8 @@ class MainActivity : AppCompatActivity() {
 
     }
 
-    private fun createTaskDialog(id: String = "") {
-        val editTask = id.isNotEmpty()
+    private fun createTaskDialog(task: Task? = null) {
+        val editTask = task != null
         val builder = AlertDialog.Builder(this)
         builder.setTitle(getString(R.string.app_name) + if (editTask) " - Editar" else " - Criar")
         builder.setMessage(getString(R.string.create_task_message))
@@ -48,11 +51,13 @@ class MainActivity : AppCompatActivity() {
             val text = edText.text.toString()
             if (text.isNotEmpty()) {
                 if (editTask) {
-                    dao.editTaskName(id, text) {
+                    dao.updateTask(task!!.uuid, TaskUpdateTypes.DESCRIPTION, {
                         startTaskList()
-                    }
-                } else
-                    dao.createTask(text)
+                    }, text)
+                } else {
+                    val task = dao.createTask(text)
+                    adapter.addTask(task)
+                }
             } else
                 Toast.makeText(this, "Não pode criar uma tarefa sem descrição!", Toast.LENGTH_SHORT).show()
         }
@@ -63,6 +68,10 @@ class MainActivity : AppCompatActivity() {
     override fun onResume() {
         super.onResume()
         startTaskList()
+        val itemTouchHelper = ItemTouchHelper(TaskItemCallback(adapter) {
+            startTaskList()
+        })
+        itemTouchHelper.attachToRecyclerView(main_tasks_list)
     }
 
     override fun onPause() {
@@ -73,17 +82,23 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun startTaskList() {
-        dao.getAll { taskList ->
-            val adapter = TaskAdapter({ task ->
-                dao.updateTask(task.uuid, TaskUpdateTypes.READ) {
-                    startTaskList()
-                }
-            }, { task ->
-                createTaskDialog(task.uuid)
-            })
-            adapter.setListItens(ArrayList(taskList))
-            main_tasks_list.adapter = adapter
+        val taskList = ArrayList<Task>()
+
+        try {
+            taskList.addAll(dao.getAll())
+        } catch (e: Exception) {
+            e.printStackTrace()
         }
+
+        adapter = TaskAdapter({ task ->
+            dao.updateTask(task.uuid, TaskUpdateTypes.READ, {
+                this.adapter.maskRead(task.uuid)
+            })
+        }, { task ->
+            createTaskDialog(task)
+        })
+        adapter.setListItems(ArrayList(taskList))
+        main_tasks_list.adapter = adapter
     }
 
 }

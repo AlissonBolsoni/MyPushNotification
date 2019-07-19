@@ -8,38 +8,31 @@ import io.realm.annotations.Required
 import java.io.Serializable
 import java.util.*
 
-@RealmClass
-open class Task : RealmObject(), Serializable {
+open class Task : RealmObject() {
 
     companion object{
         const val ID = "uuid"
         const val DESCRIPTION = "taskDescription"
         const val CREATED = "createdDate"
         const val DONE = "done"
-        const val NEW = "new"
+        const val NEW = "read"
         const val EXCLUDED = "excluded"
     }
 
     @Required
     @PrimaryKey
-    @RealmField(name = ID)
     var uuid: String = ""
 
     @Required
-    @RealmField(name = DESCRIPTION)
     var taskDescription: String = ""
 
     @Required
-    @RealmField(name = CREATED)
     var createdDate: Date
 
-    @RealmField(name = DONE)
     var done: Boolean = false
 
-    @RealmField(name = NEW)
-    var new: Boolean = true
+    var read: Boolean = false
 
-    @RealmField(name = EXCLUDED)
     var excluded: Boolean = false
 
     init {
